@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Backend/">
+    <Project Path="src/Backend/SystemOneProductivityTracker.Api/SystemOneProductivityTracker.Api.csproj" />
+    <Project Path="src/Backend/SystemOneProductivityTracker.Application/SystemOneProductivityTracker.Application.csproj" />
+    <Project Path="src/Backend/SystemOneProductivityTracker.Domain/SystemOneProductivityTracker.Domain.csproj" />
+    <Project Path="src/Backend/SystemOneProductivityTracker.Infrastructure/SystemOneProductivityTracker.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Desktop/">
+    <Project Path="src/Desktop/SystemOneProductivityTracker.Wpf/SystemOneProductivityTracker.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/SystemOneProductivityTracker.Contracts/SystemOneProductivityTracker.Contracts.csproj" />
+  </Folder>
+</Solution>
