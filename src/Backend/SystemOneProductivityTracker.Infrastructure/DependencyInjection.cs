@@ -24,6 +24,9 @@ public static class DependencyInjection
                     errorNumbersToAdd: null);
             }));
 
+        services.AddLogging();
+        services.AddDataProtection();
+
         services.AddIdentityCore<IdentityUser>(options =>
         {
             options.Password.RequireDigit = true;

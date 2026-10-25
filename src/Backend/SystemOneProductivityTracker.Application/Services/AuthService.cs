@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SystemOneProductivityTracker.Application.Interfaces;
 
-namespace SystemOneProductivityTracker.Wpf.Services;
+namespace SystemOneProductivityTracker.Application.Services;
 
 public sealed class WpfAuthService : IAuthService
 {

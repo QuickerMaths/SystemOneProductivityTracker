@@ -2,16 +2,19 @@
 using System.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SystemOneProductivityTracker.Application.Interfaces;
+using SystemOneProductivityTracker.Application.Services;
 using SystemOneProductivityTracker.Infrastructure;
+using SystemOneProductivityTracker.Wpf.ViewModels;
 
 namespace SystemOneProductivityTracker.Wpf;
 
-public partial class App: Application
+public partial class App : System.Windows.Application   
 {
     public IServiceProvider Services { get; private set; } = null!;
     public IConfiguration Configuration { get; private set; } = null!;
 
-    public new static App Current => (App)Application.Current;
+    public new static App Current => (App)System.Windows.Application.Current;
 
     protected override void OnStartup(StartupEventArgs e)
     {

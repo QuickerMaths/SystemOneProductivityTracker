@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <ItemGroup>
-	    <None Update="appsettings.json">
+	<ItemGroup>
+		<None Include="..\..\Backend\SystemOneProductivityTracker.Api\appsettings.json" Link="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-    </ItemGroup>
+	</ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Shared\SystemOneProductivityTracker.Contracts\SystemOneProductivityTracker.Contracts.csproj" />
-    <ProjectReference Include="..\..\Backend\SystemOneProductivityTracker.Application\SystemOneProductivityTracker.Application.csproj" />
-    <ProjectReference Include="..\..\Backend\SystemOneProductivityTracker.Infrastructure\SystemOneProductivityTracker.Infrastructure.csproj" />
+	<ProjectReference Include="..\..\Shared\SystemOneProductivityTracker.Contracts\SystemOneProductivityTracker.Contracts.csproj" />
+	<ProjectReference Include="..\..\Backend\SystemOneProductivityTracker.Application\SystemOneProductivityTracker.Application.csproj" />
+	<ProjectReference Include="..\..\Backend\SystemOneProductivityTracker.Infrastructure\SystemOneProductivityTracker.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

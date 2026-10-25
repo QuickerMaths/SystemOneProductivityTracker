@@ -1,6 +1,6 @@
-<UserControl x:Class="SystemOneProductivityTracker.Wpf.Views.LoginView"
+﻿<UserControl x:Class="SystemOneProductivityTracker.Wpf.Views.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
              Background="#1E1E2E" Foreground="White">
     <Grid Width="320" VerticalAlignment="Center" HorizontalAlignment="Center">
         <StackPanel>

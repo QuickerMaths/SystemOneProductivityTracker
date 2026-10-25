@@ -1,24 +1,44 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 
 namespace SystemOneProductivityTracker.Wpf.Core;
 
-public abstract class ViewModelBase : INotifyPropertyChanged
+public sealed class AsyncRelayCommand : ICommand
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
+    private readonly Func<object?, Task> _execute;
+    private readonly Predicate<object?>? _canExecute;
+    private bool _isExecuting;
 
-    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    public AsyncRelayCommand(Func<object?, Task> execute, Predicate<object?>? canExecute = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        _execute = execute;
+        _canExecute = canExecute;
     }
 
-    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value))
-            return false;
+    public bool CanExecute(object? parameter) => !_isExecuting && (_canExecute?.Invoke(parameter) ?? true);
 
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
+    public async void Execute(object? parameter)
+    {
+        if (!CanExecute(parameter)) return;
+
+        _isExecuting = true;
+        RaiseCanExecuteChanged();
+
+        try
+        {
+            await _execute(parameter);
+        }
+        finally
+        {
+            _isExecuting = false;
+            RaiseCanExecuteChanged();
+        }
     }
+
+    public event EventHandler? CanExecuteChanged
+    {
+        add => CommandManager.RequerySuggested += value;
+        remove => CommandManager.RequerySuggested -= value;
+    }
+
+    public void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
 }
