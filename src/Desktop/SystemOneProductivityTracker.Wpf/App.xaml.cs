@@ -38,6 +38,14 @@ public partial class App: Application
 
         services.AddInfrastructure(Configuration);
 
+        services.AddSingleton<IAuthService, WpfAuthService>();
+
+        services.AddTransient<LoginViewModel>();
+        services.AddTransient<DashboardViewModel>();
+        services.AddSingleton<Func<LoginViewModel>>(sp => () => sp.GetRequiredService<LoginViewModel>());
+        services.AddSingleton<Func<DashboardViewModel>>(sp => () => sp.GetRequiredService<DashboardViewModel>());
+        services.AddSingleton<MainViewModel>();
+
         services.AddSingleton<MainWindow>();
     }
 
