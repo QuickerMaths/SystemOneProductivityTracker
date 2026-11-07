@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SystemOneProductivityTracker.Application.Interfaces;
 using SystemOneProductivityTracker.Application.Services;
 using SystemOneProductivityTracker.Infrastructure;
+using SystemOneProductivityTracker.Wpf.Services;
 using SystemOneProductivityTracker.Wpf.ViewModels;
 
 namespace SystemOneProductivityTracker.Wpf;
@@ -48,6 +49,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<Func<LoginViewModel>>(sp => () => sp.GetRequiredService<LoginViewModel>());
         services.AddSingleton<Func<DashboardViewModel>>(sp => () => sp.GetRequiredService<DashboardViewModel>());
         services.AddSingleton<MainViewModel>();
+        services.AddSingleton<ActivityMonitorService>();
 
         services.AddSingleton<MainWindow>();
     }

@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Windows.Input;
 using SystemOneProductivityTracker.Application.Interfaces;
 using SystemOneProductivityTracker.Wpf.Core;
+using SystemOneProductivityTracker.Wpf.Services;
 
 namespace SystemOneProductivityTracker.Wpf.ViewModels;
 
@@ -8,17 +10,33 @@ public sealed class DashboardViewModel : ViewModelBase
 {
     private readonly IAuthService _authService;
 
-    public string WelcomeText => $"Zalogowany jako: {_authService.CurrentUserEmail}";
-    public ICommand LogoutCommand { get; }
+    private readonly ActivityMonitorService _activityMonitorService;
 
-    public DashboardViewModel(IAuthService authService)
+    public string WelcomeText => $"Zalogowany jako: {_authService.CurrentUserEmail}";
+    public string PrcessScanCount => $"Liczba wykonanych skanow: {_activityMonitorService.ScanCount}";
+    public string CurrentProcesses => $"Aktualnie monitorowane procesy: {_activityMonitorService.DisplayActivitySnapshots()}";
+    public ICommand LogoutCommand { get; }
+    public ICommand ActionCommand { get; }
+
+    public DashboardViewModel(IAuthService authService, ActivityMonitorService activityMonitorService)
     {
         _authService = authService;
+        _activityMonitorService = activityMonitorService;
         LogoutCommand = new AsyncRelayCommand(_ =>
         {
             _authService.Logout();
             return Task.CompletedTask;
         });
+        ActionCommand = new AsyncRelayCommand(ExecuteActionAsync);
+    }
+
+    private Task ExecuteActionAsync(object? parameter)
+    {
+        _activityMonitorService.StartMonitoring();
+
+        _activityMonitorService.DisplayActivitySnapshots();
+
+        return Task.CompletedTask;
     }
 }
 

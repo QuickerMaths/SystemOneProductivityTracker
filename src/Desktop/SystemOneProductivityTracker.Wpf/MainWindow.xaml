@@ -15,6 +15,19 @@
 			<Grid Background="#1E1E2E">
 				<StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 					<TextBlock Text="{Binding WelcomeText}" Foreground="White" FontSize="20" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding CurrentProcesses}" Foreground="White" FontSize="20" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding PrcessScanCount}" Foreground="White" FontSize="20" Margin="0,0,0,16"/>
+                    <Button Content="Trigger Dashboard Action"
+                        Command="{Binding ActionCommand}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Padding="20,12"
+                        Background="#89B4FA"
+                        Foreground="#11111B"
+                        FontWeight="Bold"
+                        FontSize="14"
+                        BorderThickness="0"
+                        Cursor="Hand" />
 					<Button Content="Wyloguj" Command="{Binding LogoutCommand}" Padding="12,6"/>
 				</StackPanel>
 			</Grid>
