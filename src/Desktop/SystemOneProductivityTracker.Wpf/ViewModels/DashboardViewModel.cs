@@ -13,8 +13,6 @@ public sealed class DashboardViewModel : ViewModelBase
     private readonly ActivityMonitorService _activityMonitorService;
 
     public string WelcomeText => $"Zalogowany jako: {_authService.CurrentUserEmail}";
-    public string PrcessScanCount => $"Liczba wykonanych skanow: {_activityMonitorService.ScanCount}";
-    public string CurrentProcesses => $"Aktualnie monitorowane procesy: {_activityMonitorService.DisplayActivitySnapshots()}";
     public ICommand LogoutCommand { get; }
     public ICommand ActionCommand { get; }
 
@@ -32,9 +30,6 @@ public sealed class DashboardViewModel : ViewModelBase
 
     private Task ExecuteActionAsync(object? parameter)
     {
-        _activityMonitorService.StartMonitoring();
-
-        _activityMonitorService.DisplayActivitySnapshots();
 
         return Task.CompletedTask;
     }

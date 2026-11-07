@@ -33,6 +33,7 @@ public partial class App : System.Windows.Application
         Services = serviceCollection.BuildServiceProvider();
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
+        _ = Services.GetRequiredService<SessionRecorderService>();
         mainWindow.Show();
     }
 
@@ -50,12 +51,19 @@ public partial class App : System.Windows.Application
         services.AddSingleton<Func<DashboardViewModel>>(sp => () => sp.GetRequiredService<DashboardViewModel>());
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<ActivityMonitorService>();
+        services.AddSingleton<SessionRecorderService>();
 
         services.AddSingleton<MainWindow>();
     }
 
     protected override async void OnExit(ExitEventArgs e)
     {
+        var recorder = Services.GetService<SessionRecorderService>();
+        if(recorder is not null)
+        {
+            await recorder.FlushCurrentSessionToDbAsync();
+        }
+
         if (Services is IAsyncDisposable asyncDisposable)
         {
             await asyncDisposable.DisposeAsync();
