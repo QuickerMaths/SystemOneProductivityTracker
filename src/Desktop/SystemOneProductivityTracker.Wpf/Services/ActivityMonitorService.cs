@@ -103,7 +103,7 @@ public sealed class ActivityMonitorService: IDisposable
         catch (InvalidOperationException)
         {
             return process.ProcessName;
-   
+        }
     }
 
     public void Dispose() => Stop();

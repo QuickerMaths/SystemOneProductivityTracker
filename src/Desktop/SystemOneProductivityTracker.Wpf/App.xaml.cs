@@ -1,19 +1,22 @@
-﻿using System.IO;
-using System.Windows;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel;
+using System.Windows;
 using SystemOneProductivityTracker.Application.Interfaces;
 using SystemOneProductivityTracker.Application.Services;
 using SystemOneProductivityTracker.Infrastructure;
 using SystemOneProductivityTracker.Wpf.Services;
 using SystemOneProductivityTracker.Wpf.ViewModels;
+using NotifyIcon = System.Windows.Forms.NotifyIcon;
 
 namespace SystemOneProductivityTracker.Wpf;
 
-public partial class App : System.Windows.Application   
+public partial class App : System.Windows.Application
 {
     public IServiceProvider Services { get; private set; } = null!;
     public IConfiguration Configuration { get; private set; } = null!;
+    private NotifyIcon? _notifyIcon;
+    private bool _isExit;
 
     public new static App Current => (App)System.Windows.Application.Current;
 
@@ -33,9 +36,14 @@ public partial class App : System.Windows.Application
         Services = serviceCollection.BuildServiceProvider();
 
         var mainWindow = Services.GetRequiredService<MainWindow>();
+        _ = Services.GetRequiredService<ActivityMonitorService>();
         _ = Services.GetRequiredService<SessionRecorderService>();
-        mainWindow.Show();
+
+        MainWindow.Closing += MainWindow_Closing;
+        SetupTrayIcon();
+        CreateContextMenu();
     }
+
 
     private void ConfigureServices(IServiceCollection services)
     {
@@ -74,5 +82,58 @@ public partial class App : System.Windows.Application
         }
 
         base.OnExit(e);
+    }
+
+    private void SetupTrayIcon()
+    {
+        _notifyIcon = new NotifyIcon();
+        _notifyIcon.DoubleClick += (s, args) => ShowMainWindow();
+        _notifyIcon.Click += (s, args) => ShowMainWindow();
+        _notifyIcon.Icon = ProjectResources.systemone_icon;
+        _notifyIcon.Visible = true;
+    }
+
+    private void CreateContextMenu()
+    {
+        _notifyIcon?.ContextMenuStrip = new ContextMenuStrip();
+        _notifyIcon?.ContextMenuStrip?.Items.Add("Open").Click += (s, e) => ShowMainWindow();
+        _notifyIcon?.ContextMenuStrip?.Items.Add("Exit").Click += (s, e) => ExitApplication();
+    }
+
+
+    private void ShowMainWindow()
+    {
+        if (MainWindow.IsVisible)
+        {
+            if (MainWindow?.WindowState == WindowState.Minimized)
+            {
+                MainWindow.WindowState = WindowState.Normal;
+            }
+            MainWindow?.Activate();
+        }
+        else
+        {
+            MainWindow?.Show();
+        }
+    }
+
+    void TrayIconOnClick(object? sender, EventArgs e) =>
+        ShowMainWindow();
+
+    private void ExitApplication()
+    {
+        _isExit = true;
+        MainWindow?.Close();
+        _notifyIcon?.Dispose();
+        _notifyIcon = null;
+    }
+
+    private void MainWindow_Closing(object sender, CancelEventArgs e)
+    {
+        if (!_isExit)
+        {
+            e.Cancel = true;
+            MainWindow.Hide();
+        }
     }
 }
