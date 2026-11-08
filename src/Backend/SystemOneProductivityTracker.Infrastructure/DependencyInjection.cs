@@ -24,6 +24,16 @@ public static class DependencyInjection
                     errorNumbersToAdd: null);
             }));
 
+        services.AddDbContextFactory<SystemOneProductivityTrackerDbContext>(options =>
+            options.UseSqlServer(connectionString, sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(10),
+                    errorNumbersToAdd: null);
+            }));
+
+
         services.AddLogging();
         services.AddDataProtection();
 
