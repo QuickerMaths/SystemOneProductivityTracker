@@ -3,16 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#1E1E2E" Foreground="White">
     <Grid>
-        <Button Content="Trigger Dashboard Action"
-                Command="{Binding ActionCommand}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="20,12"
-                Background="#89B4FA"
-                Foreground="#11111B"
-                FontWeight="Bold"
-                FontSize="14"
-                BorderThickness="0"
-                Cursor="Hand" />
+        <TextBlock Text="{Binding CurrentActivityName}" FontWeight="Bold" />
+        <TextBlock Text="{Binding CurrentActivityDuration}" />
     </Grid>
 </UserControl>

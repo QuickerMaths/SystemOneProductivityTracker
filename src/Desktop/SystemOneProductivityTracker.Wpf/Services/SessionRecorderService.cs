@@ -10,8 +10,10 @@ namespace SystemOneProductivityTracker.Wpf.Services
     {
         private readonly ActivityMonitorService _monitor;
         private readonly IAuthService _authService;
+        private readonly IJevClassficationService _classifier;
         private readonly IDbContextFactory<SystemOneProductivityTrackerDbContext> _dbFactory;
         private SemaphoreSlim _syncLock = new(1, 1);
+        private readonly object _stateLock = new();
 
 
         private readonly Dictionary<string, TrackedApp> _trackedAppsCache = new(StringComparer.OrdinalIgnoreCase);
@@ -24,10 +26,12 @@ namespace SystemOneProductivityTracker.Wpf.Services
         public SessionRecorderService(
             ActivityMonitorService monitor,
             IAuthService authService,
+            IJevClassficationService classifier,
             IDbContextFactory<SystemOneProductivityTrackerDbContext> dbFactory)
         {
             _monitor = monitor;
             _authService = authService;
+            _classifier = classifier;
             _dbFactory = dbFactory;
 
             _authService.AuthenticationStateChanged += OnAuthStateChanged;
@@ -53,8 +57,8 @@ namespace SystemOneProductivityTracker.Wpf.Services
         {
             await using var db = await _dbFactory.CreateDbContextAsync();
             var userApps = await db.TrackedApps
-                .AsNoTracking()
                 .Where(x => x.UserId == userId)
+                .AsNoTracking()
                 .ToListAsync( );
 
             _trackedAppsCache.Clear();
@@ -83,6 +87,7 @@ namespace SystemOneProductivityTracker.Wpf.Services
                         await FlushCurrentSessionToDbAsync();
                     }
                     CurrentActivityUpdated?.Invoke("Idle", TimeSpan.Zero);
+                    return;
                 }
 
                 if(_currentSession is not null
@@ -156,20 +161,40 @@ namespace SystemOneProductivityTracker.Wpf.Services
 
         public async Task FlushCurrentSessionToDbAsync()
         {
-            if (_currentSession is null) return;
+            var snapshot = DetachSessionToFlush();
+            if (snapshot is null) return;
 
-            var sessionToSave = _currentSession;
-            _currentSession = null;
-            _currentProcessName = null;
-
-            if ((sessionToSave.EndedAt - sessionToSave.StartedAt).TotalSeconds < 2)
-                return;
+            var (sessionToFlush, processName) = snapshot.Value;
 
             await using var db = await _dbFactory.CreateDbContextAsync();
-            db.ActivitySessions.Add(sessionToSave);
+
+            await _classifier.ClassifyAppAsync(JevRequest(processName, sessionToFlush.WindowTitle));
+
+            db.ActivitySessions.Add(sessionToFlush);
             await db.SaveChangesAsync();
 
             Debug.WriteLine("Session flushed");
+
+            (ActivitySession Session, string ProcessName)? DetachSessionToFlush()
+            {
+                lock (_stateLock)
+                {
+                    if (_currentSession is null || _currentProcessName is null) return null;
+                    if ((_currentSession.EndedAt - _currentSession.StartedAt).TotalSeconds < 2) return null;
+
+                    var result = (_currentSession, _currentProcessName);
+
+                    _currentSession = null;
+                    _currentProcessName = null;
+
+                    return result;
+                }
+            }
+        }
+
+        private JevClassificationRequest JevRequest(string processName, string? windowSampleName)
+        {
+            return new JevClassificationRequest(processName, windowSampleName);
         }
     }
 }

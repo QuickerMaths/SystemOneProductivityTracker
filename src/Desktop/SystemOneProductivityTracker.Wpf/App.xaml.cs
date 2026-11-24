@@ -26,7 +26,8 @@ public partial class App : System.Windows.Application
 
         var configBuilder = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddUserSecrets<App>();
 
         Configuration = configBuilder.Build();
 
@@ -52,6 +53,7 @@ public partial class App : System.Windows.Application
         services.AddInfrastructure(Configuration);
 
         services.AddSingleton<IAuthService, WpfAuthService>();
+        services.AddSingleton<IJevClassficationService, JevClassifierService>();
 
         services.AddTransient<LoginViewModel>();
         services.AddTransient<DashboardViewModel>();
